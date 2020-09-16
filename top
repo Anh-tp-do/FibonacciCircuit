@@ -1,8 +1,85 @@
-echo "# FibonacciCircuit" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M master
-git remote add origin https://github.com/Anh-tp-do/FibonacciCircuit.git
-git push -u origin master
-                
+module fib_circuit
+	(
+	input wire clk, 
+	input wire start, reset,						// command signal
+	input wire [4:0] i,
+	output reg ready, done,							// status signals
+	output wire [19:0] fib
+	);
+
+	// states
+	localparam [1:0]
+				IDLE = 2'b00,
+				OP = 2'b01,
+				DONE = 2'b10;
+	
+	// signals
+	reg [1:0] state_reg, state_next;				// used to store current and next state
+	reg [21:0] i0_reg, i1_reg, i0_next, i1_next;	// i0_reg => fib(i0) , i1_reg => fib(i1)
+	reg [4:0] n_reg, n_next; 						// index regs
+	
+	// FSMD
+	always@(posedge clk, posedge reset)
+		if (reset)
+			begin
+			state_reg <= IDLE;
+			i0_reg <= 0;
+			i1_reg <= 0;
+			n_reg <= 0;
+			end
+		else			// main RT operation regs
+			begin
+			state_reg <= state_next;
+			i1_reg <= i1_next;
+			i0_reg <= i0_next;
+			n_reg  <= n_next;
+			end
+	
+	// FSMD next-state logic
+	always @*
+		begin
+				// init
+			state_reg = state_next;
+			ready = 1'b0;
+			done = 1'b0;
+			i0_next = i0_reg;			
+			i1_next = i1_reg;
+			n_next = n_reg;
+			
+		case(state_reg)
+			IDLE:
+				begin
+				ready = 1'b1;
+				if (start)
+					begin
+					state_next = OP;
+					i0_next = 0;
+					i1_next = 1;			// 20'd1
+					n_next = i;				// index
+					end 
+				end
+			OP:
+				if (n_reg ==0)				// i = 0, fib = 0
+					i1_next = 0;			// 
+					state_next = DONE;
+				else if (n_reg ==1)			// i = 1????	
+					state_next = DONE;
+				else
+					begin
+					i1_next = i1_reg + i0_reg;		// fib= fib(i-1) + fib(i-2)
+					i0_next = i1_reg;
+					n_next = n_reg -1;				// decrements n
+					end
+			DONE:
+				begin
+				done = 1;
+				state_next = IDLE;
+				end
+			default: state_next = IDLE;
+		endcase 
+		end
+		
+		// output 
+		assign fib = t1_reg;
+	
+endmodule
