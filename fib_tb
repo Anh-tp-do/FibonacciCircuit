@@ -1,0 +1,9 @@
+
+module fib_tb 
+inst1 fib_circuit (
+	input wire clk, 
+	input wire start, reset,						
+	input wire [4:0] i,
+	output reg ready, done,							
+	output wire [19:0] fib
+	);
