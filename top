@@ -15,7 +15,7 @@ module fib_circuit
 	
 	// signals
 	reg [1:0] state_reg, state_next;				// used to store current and next state
-	reg [21:0] i0_reg, i1_reg, i0_next, i1_next;			// i0_reg => fib(i0) , i1_reg => fib(i1)
+	reg [21:0] i0_reg, i1_reg, i0_next, i1_next;	// i0_reg => fib(i0) , i1_reg => fib(i1)
 	reg [4:0] n_reg, n_next; 						// index regs
 	
 	// FSMD
@@ -60,9 +60,11 @@ module fib_circuit
 				end
 			OP:
 				if (n_reg ==0)				// i = 0, fib = 0
-					i1_next = 0;			// 
+					begin
+                  	i1_next = 0;			// 
 					state_next = DONE;
-				else if (n_reg ==1)			// i = 1, fib = 1	
+                    end
+				else if (n_reg ==1)			
 					state_next = DONE;
 				else
 					begin
@@ -80,6 +82,29 @@ module fib_circuit
 		end
 		
 		// output 
-		assign fib = t1_reg;
+		assign fib = i1_reg;
 	
 endmodule
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
